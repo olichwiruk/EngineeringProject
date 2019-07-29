@@ -1,0 +1,6 @@
+<p><%= sheet.course_name %></p>
+<p><%= sheet.instructor %></p>
+<br>
+<% sheet.students.each do |student| %>
+  <p><%= student.index_number %> | <%= student.name %></p>
+<% end %>

@@ -4,12 +4,18 @@ GEM
     rack (2.0.7)
     roda (3.22.0)
       rack
+    ruby-ole (1.2.12.2)
+    spreadsheet (1.2.4)
+      ruby-ole (>= 1.0)
+    tilt (2.0.9)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   roda (~> 3.22)
+  spreadsheet
+  tilt
 
 BUNDLED WITH
    1.16.2
