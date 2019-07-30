@@ -1,1 +1,4 @@
-connection_url: 'mysql2://localhost/system_manager_db?user=admin&password=admin'
+connection_url: 'mysql2://localhost/system_manager_db'
+params:
+  username: admin
+  password: admin
