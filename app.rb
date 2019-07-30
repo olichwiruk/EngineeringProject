@@ -6,10 +6,11 @@ class App < Roda
 
   route do |r|
     r.root do
-      file_path = 'file.xls'
+      file_name = 'file.xls'
       sheet = SheetManager.new(
-        Spreadsheet.open(file_path).worksheet(0)
+        Spreadsheet.open('datafiles/' + file_name).worksheet(0)
       )
+      @users = %x(cut -d: -f1 /etc/passwd)
       view('index', locals: { sheet: sheet })
     end
   end

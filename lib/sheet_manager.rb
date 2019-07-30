@@ -32,16 +32,21 @@ class SheetManager
   def students
     students = []
     sheet.rows[17..-1].each do |row|
-      students << Student.new(name: row[1], index_number: row[2])
+      surname, name = row[1].split(' ')
+      index_number = row[2]
+      students << Student.new(
+        name: name, surname: surname, index_number: index_number
+      )
     end
     students
   end
 
   class Student
-    attr_reader :name, :index_number
+    attr_reader :name, :surname, :index_number
 
-    def initialize(name:, index_number:)
+    def initialize(name:, surname:, index_number:)
       @name = name
+      @surname = surname
       @index_number = index_number
     end
   end
