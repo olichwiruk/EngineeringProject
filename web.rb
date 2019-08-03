@@ -11,6 +11,10 @@ class Web < Application
 
   route do |r|
     r.root do
+      r.resolve :service do |service|
+        p service.call
+      end
+
       file_name = 'file.xls'
       sheet = SheetManager.new(
         Spreadsheet.open('datafiles/' + file_name).worksheet(0)
