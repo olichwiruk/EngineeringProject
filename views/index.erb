@@ -1,7 +1,3 @@
-<p><%= @users.split(' ').find { |user| user == 'marcin' } %></p>
-<p><%= sheet.course_name.split(' ').map(&:chr).join + sheet.academic_year[7..8] %></p>
-<p><%= sheet.instructor %></p>
-<br>
 <% sheet.students.each do |student| %>
   <p><%= student.index_number %> | <%= student.name %> <%= student.surname %></p>
 <% end %>

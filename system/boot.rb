@@ -33,8 +33,10 @@ Container.configure do |container|
     Repositories::StudentRepo.new(rom)
   end
 
-  container.register(:service) do
-    Services::StudentService.new(
+  container.register(:import_service) do
+    Services::ImportService.new(
+      container[:course_repo],
+      container[:employee_repo],
       container[:student_repo]
     )
   end

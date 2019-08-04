@@ -8,5 +8,21 @@ module Repositories
         .map_to(::Entities::Employee)
         .one
     end
+
+    def find(entity)
+      employees
+        .where(
+          title: entity.title,
+          name: entity.name,
+          surname: entity.surname
+        )
+        .map_to(::Entities::Employee)
+        .one
+    end
+
+    def save(entity)
+      return if find(entity)
+      employees.changeset(:create, entity).commit
+    end
   end
 end

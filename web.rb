@@ -1,5 +1,4 @@
 require './application'
-require 'spreadsheet'
 
 class Web < Application
   use RequestMiddleware
@@ -11,16 +10,23 @@ class Web < Application
 
   route do |r|
     r.root do
-      r.resolve :service do |service|
-        p service.call
+      r.redirect('import')
+    end
+
+    r.on 'import' do
+      r.get do
+        view('import')
       end
 
-      file_name = 'file.xls'
-      sheet = SheetManager.new(
-        Spreadsheet.open('datafiles/' + file_name).worksheet(0)
-      )
-      @users = %x(cut -d: -f1 /etc/passwd)
-      view('index', locals: { sheet: sheet })
+      r.post do
+        r.resolve :import_service do |service|
+          service.call(r.params)
+        end
+
+        file_name = r.params.fetch('file-name')
+        sheet = SheetManager.open(file_name)
+        view('index', locals: { sheet: sheet })
+      end
     end
   end
 end
