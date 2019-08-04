@@ -20,12 +20,30 @@ class Web < Application
 
       r.post do
         r.resolve :import_service do |service|
-          service.call(r.params)
+          course = service.call(r.params)
+          r.redirect("courses/#{course.id}")
         end
+      end
+    end
 
-        file_name = r.params.fetch('file-name')
-        sheet = SheetManager.open(file_name)
-        view('index', locals: { sheet: sheet })
+    r.on 'courses' do
+      r.get Integer do |course_id|
+        r.resolve :course_service do |service|
+          course, students_accounts = service.call(course_id)
+
+          view(
+            'course',
+            locals: {
+              course: course,
+              students_system_accounts: students_accounts
+            }
+          )
+        end
+      end
+    end
+
+    r.on 'script' do
+      r.post do
       end
     end
   end

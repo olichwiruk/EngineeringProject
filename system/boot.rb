@@ -12,6 +12,7 @@ Dir[File.join(LIB_PATH, 'entities', '*.rb')].each { |file| require file }
 Dir[File.join(LIB_PATH, 'relations', '*.rb')].each { |file| require file }
 Dir[File.join(LIB_PATH, 'repositories', '*.rb')].each { |file| require file }
 Dir[File.join(LIB_PATH, 'services', '*.rb')].each { |file| require file }
+Dir[File.join(LIB_PATH, 'system', '*.rb')].each { |file| require file }
 
 Container.configure do |container|
   config.register_relation(Relations::Courses)
@@ -33,11 +34,22 @@ Container.configure do |container|
     Repositories::StudentRepo.new(rom)
   end
 
+  container.register(:system_repo) do
+    System::Repo.new
+  end
+
   container.register(:import_service) do
     Services::ImportService.new(
       container[:course_repo],
       container[:employee_repo],
       container[:student_repo]
+    )
+  end
+
+  container.register(:course_service) do
+    Services::CourseService.new(
+      container[:course_repo],
+      container[:system_repo]
     )
   end
 end

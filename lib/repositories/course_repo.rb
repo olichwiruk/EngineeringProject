@@ -18,6 +18,7 @@ module Repositories
 
     def save(entity)
       create(entity) unless by_group(entity.group)
+      by_group(entity.group)
     end
 
     private def create(entity)
