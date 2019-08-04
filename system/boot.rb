@@ -15,6 +15,8 @@ Dir[File.join(LIB_PATH, 'services', '*.rb')].each { |file| require file }
 
 Container.configure do |container|
   config.register_relation(Relations::Courses)
+  config.register_relation(Relations::CoursesEmployees)
+  config.register_relation(Relations::CoursesStudents)
   config.register_relation(Relations::Employees)
   config.register_relation(Relations::Students)
   rom = ROM.container(config)
