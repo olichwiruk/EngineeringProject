@@ -11,6 +11,7 @@ Dir[File.join(LIB_PATH, '*.rb')].each { |file| require file }
 Dir[File.join(LIB_PATH, 'entities', '*.rb')].each { |file| require file }
 Dir[File.join(LIB_PATH, 'relations', '*.rb')].each { |file| require file }
 Dir[File.join(LIB_PATH, 'repositories', '*.rb')].each { |file| require file }
+Dir[File.join(LIB_PATH, 'script_generators', '*.rb')].each { |file| require file }
 Dir[File.join(LIB_PATH, 'services', '*.rb')].each { |file| require file }
 Dir[File.join(LIB_PATH, 'system', '*.rb')].each { |file| require file }
 
@@ -51,6 +52,20 @@ Container.configure do |container|
       container[:course_repo],
       container[:system_repo]
     )
+  end
+
+  container.register(:generate_script_service) do
+    Services::GenerateScriptService.new(
+      container[:add_students_script_generator]
+    )
+  end
+
+  container.register(:execute_script_service) do
+    Services::ExecuteScriptService.new
+  end
+
+  container.register(:add_students_script_generator) do
+    ScriptGenerators::AddStudents.new
   end
 end
 

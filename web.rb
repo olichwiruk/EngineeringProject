@@ -44,6 +44,19 @@ class Web < Application
 
     r.on 'script' do
       r.post do
+        r.resolve :generate_script_service do |service|
+          script = service.call(r.params)
+          view('script', locals: { script: script })
+        end
+      end
+    end
+
+    r.post 'execute' do
+      r.resolve :execute_script_service do |service|
+        script = r.params.fetch('script').strip
+        result = service.call(script)
+
+        view('script_execute', locals: { result: result })
       end
     end
   end
