@@ -53,7 +53,7 @@ class Web < Application
 
     r.post 'execute' do
       r.resolve :execute_script_service do |service|
-        script = r.params.fetch('script').strip
+        script = r.params.fetch('script').gsub(/\s+/, ' ')
         result = service.call(script)
 
         view('script_execute', locals: { result: result })

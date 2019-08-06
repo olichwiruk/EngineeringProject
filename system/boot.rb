@@ -56,6 +56,7 @@ Container.configure do |container|
 
   container.register(:generate_script_service) do
     Services::GenerateScriptService.new(
+      container[:student_repo],
       container[:add_students_script_generator]
     )
   end

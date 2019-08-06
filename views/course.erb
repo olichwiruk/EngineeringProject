@@ -3,7 +3,8 @@
 
 <br>
 <form action='/script' method='post'>
-  <input class='btn btn-primary' type='submit' value='Generuj skrypt'></input>
+  <input type='hidden' name='course-code' value='<%= course.code %>'>
+  <input class='btn btn-primary' type='submit' value='Generuj skrypt'>
   <table class='table table-striped table-hover'>
     <thead>
       <tr>
@@ -12,7 +13,7 @@
         <th>
           <div>Utwórz w systemie</div>
           <div>
-            <input type='checkbox' id='select-all'></input>
+            <input type='checkbox' id='select-all'>
           </div>
         </th>
       </tr>
@@ -26,12 +27,12 @@
         <td><input type='checkbox' name='create-students-account[]' value='<%= student.index_number.to_s %>'
               <%= user_exists ? 'checked disabled' : 'class = "create-account"' %>
         >
-          </input></td>
+          </td>
       </tr>
     <% end %>
     <tbody>
   </table>
-  <input class='btn btn-primary' type='submit' value='Generuj skrypt'></input>
+  <input class='btn btn-primary' type='submit' value='Generuj skrypt'>
 </form>
 
 <script>

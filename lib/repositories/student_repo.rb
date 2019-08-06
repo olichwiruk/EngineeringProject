@@ -2,11 +2,11 @@ module Repositories
   class StudentRepo < ROM::Repository[:students]
     auto_struct false
 
-    def by_index_number(index_number)
+    def by_index_numbers(index_numbers)
       students
-        .where(index_number: index_number)
+        .where(index_number: index_numbers)
         .map_to(::Entities::Student)
-        .one
+        .to_a
     end
 
     def save(entity)

@@ -26,7 +26,7 @@ module Entities
     end
 
     def code
-      name_short + academic_year[-2..-1]
+      name_short.downcase + academic_year[-2..-1]
     end
   end
 end

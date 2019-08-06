@@ -1,13 +1,15 @@
 module ScriptGenerators
   class AddStudents
-    def call(index_numbers)
-      script = ''
+    def call(students, course_code)
+      script = <<~SCRIPT
+        mkdir -p /home/#{course_code};
+      SCRIPT
 
-      # index_numbers.each do |index_number|
+      students.each do |student|
         script += <<~SCRIPT
-          cut -d: -f1 /etc/passwd
+          useradd -m s#{student.index_number} -b /home/#{course_code} -p #{student.surname.downcase + student.name.downcase};
         SCRIPT
-      # end
+      end
 
       script
     end
