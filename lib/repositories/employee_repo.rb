@@ -9,6 +9,13 @@ module Repositories
         .one
     end
 
+    def by_ids(ids)
+      employees
+        .where(id: ids)
+        .map_to(::Entities::Employee)
+        .to_a
+    end
+
     def find(entity)
       employees
         .where(

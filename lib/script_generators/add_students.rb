@@ -2,6 +2,7 @@ module ScriptGenerators
   class AddStudents
     def call(students, course_code)
       script = <<~SCRIPT
+
         mkdir -p /home/#{course_code};
       SCRIPT
 

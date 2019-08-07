@@ -4,5 +4,13 @@ module Entities
     attribute :title, Types::String
     attribute :name, Types::String
     attribute :surname, Types::String
+
+    def login
+      (name + surname).downcase
+    end
+
+    def password
+      (surname + name).downcase
+    end
   end
 end

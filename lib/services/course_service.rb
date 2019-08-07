@@ -9,7 +9,11 @@ module Services
 
     def call(course_id)
       course = find_course(course_id)
-      [course, students_data(course.students)]
+      [
+        course,
+        students_data(course.students),
+        employees_data(course.instructors)
+      ]
     end
 
     private def find_course(course_id)
@@ -25,6 +29,12 @@ module Services
           }
 
         memo
+      end
+    end
+
+    private def employees_data(instructors)
+      instructors.each_with_object({}) do |instructor, memo|
+        memo[instructor.login] = system_users.include?(instructor.login)
       end
     end
 

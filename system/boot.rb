@@ -60,7 +60,9 @@ Container.configure do |container|
 
   container.register(:generate_script_service) do
     Services::GenerateScriptService.new(
+      container[:employee_repo],
       container[:student_repo],
+      container[:add_employees_script_generator],
       container[:add_students_script_generator],
       container[:create_databases_script_generator]
     )
@@ -68,6 +70,10 @@ Container.configure do |container|
 
   container.register(:execute_script_service) do
     Services::ExecuteScriptService.new
+  end
+
+  container.register(:add_employees_script_generator) do
+    ScriptGenerators::AddEmployees.new
   end
 
   container.register(:add_students_script_generator) do
