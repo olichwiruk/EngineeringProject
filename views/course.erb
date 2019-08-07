@@ -13,7 +13,13 @@
         <th>
           <div>Utwórz w systemie</div>
           <div>
-            <input type='checkbox' id='select-all'>
+            <input type='checkbox' id='select-all-create-account'>
+          </div>
+        </th>
+        <th>
+          <div>Utwórz bazę danych</div>
+          <div>
+            <input type='checkbox' id='select-all-create-db'>
           </div>
         </th>
       </tr>
@@ -21,11 +27,20 @@
     <tbody>
     <% course.students.each do |student| %>
       <tr>
-        <% user_exists = students_system_accounts[student.index_number.to_s] %>
+        <% student_data = students_system_data[student.index_number.to_s] %>
+        <% user_exists = student_data[:account] %>
+        <% db_exists = student_data[:database] %>
         <td><%= student.index_number %> </td>
         <td><%= "#{ student.name } #{student.surname}" %></td>
         <td><input type='checkbox' name='create-students-account[]' value='<%= student.index_number.to_s %>'
               <%= user_exists ? 'checked disabled' : 'class = "create-account"' %>
+        >
+          </td>
+          <td><input type='checkbox' name='create-students-db[]'
+                     id='<%= student.index_number.to_s %>db'
+                     value='<%= student.index_number.to_s %>'
+              <%= (user_exists && !db_exists) ? 'class = "create-db"' : 'disabled' %>
+              <%= 'checked' if db_exists %>
         >
           </td>
       </tr>
@@ -36,9 +51,18 @@
 </form>
 
 <script>
-  document.getElementById('select-all')
+  document.getElementById('select-all-create-account')
     .addEventListener('click', (e) => {
       checkboxes = document.getElementsByClassName('create-account');
+      for(var i = 0; i < checkboxes.length; i++){
+        checkboxes[i].checked = e.target.checked;
+      }
+      manageDbCheckboxes(checkboxes);
+    });
+
+  document.getElementById('select-all-create-db')
+    .addEventListener('click', (e) => {
+      checkboxes = document.getElementsByClassName('create-db');
       for(var i = 0; i < checkboxes.length; i++){
         checkboxes[i].checked = e.target.checked;
       }
@@ -47,14 +71,36 @@
   [...document.getElementsByClassName('create-account')]
     .forEach( (el) => {
       el.addEventListener('click', () => {
-        document.getElementById('select-all').checked = allChecked();
+        manageDbCheckbox(el);
+
+        document.getElementById('select-all-create-account').checked = allChecked('create-account');
       });
     });
 
-  const allChecked = () => {
-    checkboxes = document.getElementsByClassName('create-account');
+  const allChecked = (type) => {
+    checkboxes = document.getElementsByClassName(type);
     return [...checkboxes].every( (checkbox, index, array) => {
       return checkbox.checked;
     });
+  }
+
+  const manageDbCheckbox = (el) => {
+    create_db_checkbox = document.getElementById(el.value+'db');
+    create_db_checkbox.addEventListener('click', () => {
+      console.log(allChecked('create-db'));
+      document.getElementById('select-all-create-db').checked = allChecked('create-db');
+    });
+    create_db_checkbox.disabled = !el.checked;
+    if (create_db_checkbox.disabled) {
+      create_db_checkbox.classList.remove('create-db');
+      create_db_checkbox.checked = false;
+    } else {
+      create_db_checkbox.classList.add('create-db');
+    }
+  }
+
+  const manageDbCheckboxes = (elements) => {
+    [...elements].forEach( (el) => { manageDbCheckbox(el); });
+    db_checkboxes = document.getElementsByClassName('create-db');
   }
 </script>

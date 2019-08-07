@@ -36,7 +36,11 @@ Container.configure do |container|
   end
 
   container.register(:system_repo) do
-    System::Repo.new
+    System::Repo.new(container[:sql_runner])
+  end
+
+  container.register(:sql_runner) do
+    System::SqlRunner.new(db_config)
   end
 
   container.register(:import_service) do
@@ -57,7 +61,8 @@ Container.configure do |container|
   container.register(:generate_script_service) do
     Services::GenerateScriptService.new(
       container[:student_repo],
-      container[:add_students_script_generator]
+      container[:add_students_script_generator],
+      container[:create_databases_script_generator]
     )
   end
 
@@ -67,6 +72,12 @@ Container.configure do |container|
 
   container.register(:add_students_script_generator) do
     ScriptGenerators::AddStudents.new
+  end
+
+  container.register(:create_databases_script_generator) do
+    ScriptGenerators::CreateDatabases.new(
+      container[:sql_runner]
+    )
   end
 end
 

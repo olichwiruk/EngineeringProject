@@ -9,17 +9,20 @@ module Services
 
     def call(course_id)
       course = find_course(course_id)
-      [course, students_accounts(course.students)]
+      [course, students_data(course.students)]
     end
 
     private def find_course(course_id)
       course_repo.by_id(course_id)
     end
 
-    private def students_accounts(students)
+    private def students_data(students)
       students.each_with_object({}) do |student, memo|
         memo[student.index_number.to_s] =
-          system_users.include? "s#{student.index_number}"
+          {
+            account: system_users.include?("s#{student.index_number}"),
+            database: system_databases.include?("s#{student.index_number}")
+          }
 
         memo
       end
@@ -27,6 +30,10 @@ module Services
 
     private def system_users
       @system_users ||= system_repo.all_users
+    end
+
+    private def system_databases
+      @system_databases ||= system_repo.all_databases
     end
   end
 end

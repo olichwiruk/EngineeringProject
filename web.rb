@@ -29,13 +29,13 @@ class Web < Application
     r.on 'courses' do
       r.get Integer do |course_id|
         r.resolve :course_service do |service|
-          course, students_accounts = service.call(course_id)
+          course, students_data = service.call(course_id)
 
           view(
             'course',
             locals: {
               course: course,
-              students_system_accounts: students_accounts
+              students_system_data: students_data
             }
           )
         end
@@ -45,7 +45,11 @@ class Web < Application
     r.on 'script' do
       r.post do
         r.resolve :generate_script_service do |service|
-          script = service.call(r.params)
+          script = service.call(
+            course_code: r.params['course-code'],
+            index_numbers_to_create_account: r.params['create-students-account'],
+            index_numbers_to_create_database: r.params['create-students-db']
+          )
           view('script', locals: { script: script })
         end
       end
