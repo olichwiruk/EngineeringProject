@@ -8,7 +8,7 @@ module ScriptGenerators
 
       students.each do |student|
         script += <<~SCRIPT
-          useradd -m s#{student.index_number} -b /home/#{course_code} -p #{student.surname.downcase + student.name.downcase};
+          useradd -m #{student.login} -b /home/#{course_code} -p #{student.password};
         SCRIPT
       end
 

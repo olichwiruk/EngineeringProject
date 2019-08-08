@@ -24,8 +24,8 @@ module Services
       students.each_with_object({}) do |student, memo|
         memo[student.index_number.to_s] =
           {
-            account: system_users.include?("s#{student.index_number}"),
-            database: system_databases.include?("s#{student.index_number}")
+            account: system_users.include?(student.login),
+            database: system_databases.include?(student.login)
           }
 
         memo
