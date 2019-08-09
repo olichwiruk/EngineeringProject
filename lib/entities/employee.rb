@@ -12,5 +12,9 @@ module Entities
     def password
       (surname + name).downcase
     end
+
+    def full_name
+      title + ' ' + name + ' ' + surname
+    end
   end
 end

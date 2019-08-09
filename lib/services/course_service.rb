@@ -34,7 +34,13 @@ module Services
 
     private def employees_data(instructors)
       instructors.each_with_object({}) do |instructor, memo|
-        memo[instructor.login] = system_users.include?(instructor.login)
+        memo[instructor.login] =
+          {
+            account: system_users.include?(instructor.login),
+            privilege_databases: system_repo.employee_privilege_databases(instructor)
+          }
+
+        memo
       end
     end
 

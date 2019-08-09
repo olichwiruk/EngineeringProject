@@ -50,7 +50,9 @@ class Web < Application
             course_code: r.params['course-code'],
             employee_ids_to_create_account: r.params['create-instructors-account'],
             index_numbers_to_create_account: r.params['create-students-account'],
-            index_numbers_to_create_database: r.params['create-students-db']
+            index_numbers_to_create_database: r.params['create-students-db'],
+            employee_id_to_add_privileges: r.params['instructor-db'],
+            index_numbers_to_add_privileges: r.params['add-privileges-db']
           )
           view('script', locals: { script: script })
         end

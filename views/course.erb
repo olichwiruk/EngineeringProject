@@ -6,18 +6,20 @@
       <tr>
         <th>Prowadzący</th>
         <th>Utwórz konto w systemie</th>
+        <th>Zarządzanie bazami danych</th>
       </tr>
     </thead>
     <tbody>
-      <% course.instructors.each do |instructor| %>
+      <% course.instructors.each_with_index do |instructor, index| %>
         <tr>
-          <td><%= instructor.title %> <%= instructor.name%> <%= instructor.surname %></td>
+          <td><%= instructor.full_name %></td>
           <td>
             <input type='checkbox' name='create-instructors-account[]' value='<%= instructor.id %>'
-            <%= 'checked disabled' if employees_system_data[instructor.login] %>
-            >
-            <%= "(#{instructor.login})" if employees_system_data[instructor.login] %>
+            <%= 'checked disabled' if employees_system_data[instructor.login][:account] %>
+                   >
+                   <%= "(#{instructor.login})" if employees_system_data[instructor.login][:account] %>
           </td>
+          <td><input type='radio' name='instructor-db' class='check-instructor' value='<%= instructor.id %>' data-instructor-name='<%= instructor.full_name %>' data-instructor-login='<%= instructor.login %>' <%= 'checked' if index == 0 %>></td>
         </tr>
       <% end %>
     </tbody>
@@ -42,60 +44,50 @@
             <input type='checkbox' id='select-all-create-db'>
           </div>
         </th>
+        <th>
+          <div>Nadaj prawa prowadzącemu</div>
+          <div id='db-instructor-name'></div>
+          <input type='checkbox' id='select-all-db-privileges'>
+        </th>
       </tr>
     </thead>
     <tbody>
-    <% course.students.each do |student| %>
-      <tr>
-        <% student_data = students_system_data[student.index_number.to_s] %>
-        <% user_exists = student_data[:account] %>
-        <% db_exists = student_data[:database] %>
-        <td><%= student.index_number %> </td>
-        <td><%= "#{ student.name } #{student.surname}" %></td>
-        <td><input type='checkbox' name='create-students-account[]' value='<%= student.index_number.to_s %>'
-              <%= user_exists ? 'checked disabled' : 'class = "create-account"' %>
-        >
+      <% course.students.each do |student| %>
+        <tr>
+          <% student_data = students_system_data[student.index_number.to_s] %>
+          <% user_exists = student_data[:account] %>
+          <% db_exists = student_data[:database] %>
+          <td><%= student.index_number %> </td>
+          <td><%= "#{ student.name } #{student.surname}" %></td>
+          <td><input type='checkbox' name='create-students-account[]' value='<%= student.index_number.to_s %>'
+            <%= user_exists ? 'checked disabled' : 'class = "create-account"' %>
+                     >
           </td>
           <td><input type='checkbox' name='create-students-db[]'
                      id='<%= student.index_number.to_s %>db'
                      value='<%= student.index_number.to_s %>'
-              <%= (user_exists && !db_exists) ? 'class = "create-db"' : 'disabled' %>
-              <%= 'checked' if db_exists %>
-        >
+                     <%= db_exists ? 'disabled checked' : 'class = "create-db"' %>
+                     >
           </td>
-      </tr>
-    <% end %>
-    <tbody>
+          <td>
+            <input type='checkbox' name='add-privileges-db[]'
+                   id='<%= student.index_number.to_s %>db_p'
+                   value='<%= student.index_number.to_s %>'
+                   class = 'privileges-checkbox'
+                   <%= 'disabled' unless db_exists %>
+                   >
+          </td>
+        </tr>
+      <% end %>
+      <tbody>
   </table>
   <input class='btn btn-primary' type='submit' value='Generuj skrypt'>
 </form>
 
 <script>
-  document.getElementById('select-all-create-account')
-    .addEventListener('click', (e) => {
-      checkboxes = document.getElementsByClassName('create-account');
-      for(var i = 0; i < checkboxes.length; i++){
-        checkboxes[i].checked = e.target.checked;
-      }
-      manageDbCheckboxes(checkboxes);
-    });
-
-  document.getElementById('select-all-create-db')
-    .addEventListener('click', (e) => {
-      checkboxes = document.getElementsByClassName('create-db');
-      for(var i = 0; i < checkboxes.length; i++){
-        checkboxes[i].checked = e.target.checked;
-      }
-    });
-
-  [...document.getElementsByClassName('create-account')]
-    .forEach( (el) => {
-      el.addEventListener('click', () => {
-        manageDbCheckbox(el);
-
-        document.getElementById('select-all-create-account').checked = allChecked('create-account');
-      });
-    });
+  var currentInstructor = document.querySelector('.check-instructor:checked');
+  var instructorName = currentInstructor.getAttribute('data-instructor-name');
+  var instructorLogin = currentInstructor.getAttribute('data-instructor-login');
 
   const allChecked = (type) => {
     checkboxes = document.getElementsByClassName(type);
@@ -104,23 +96,81 @@
     });
   }
 
-  const manageDbCheckbox = (el) => {
-    create_db_checkbox = document.getElementById(el.value+'db');
-    create_db_checkbox.addEventListener('click', () => {
-      console.log(allChecked('create-db'));
-      document.getElementById('select-all-create-db').checked = allChecked('create-db');
-    });
-    create_db_checkbox.disabled = !el.checked;
-    if (create_db_checkbox.disabled) {
-      create_db_checkbox.classList.remove('create-db');
-      create_db_checkbox.checked = false;
-    } else {
-      create_db_checkbox.classList.add('create-db');
-    }
-  }
+  const manageDbPrivilageCheckboxes = () => {
+    currentInstructor = document.querySelector('.check-instructor:checked');
+    instructorName = currentInstructor.getAttribute('data-instructor-name');
+    instructorLogin = currentInstructor.getAttribute('data-instructor-login');
 
-  const manageDbCheckboxes = (elements) => {
-    [...elements].forEach( (el) => { manageDbCheckbox(el); });
-    db_checkboxes = document.getElementsByClassName('create-db');
-  }
+    document.getElementById('db-instructor-name').textContent = instructorName;
+    [...document.getElementsByClassName('privileges-checkbox')]
+      .forEach( (el) => {
+        manageDbPrivilageCheckbox(el.value);
+      });
+    document.getElementById('select-all-db-privileges').checked = allChecked('db-privileges');
+  };
+
+  const manageDbPrivilageCheckbox = (index_number) => {
+    const create_db_el = document.getElementById(index_number + 'db');
+    const el = document.getElementById(index_number + 'db_p');
+
+    privilege_added = <%= employees_system_data.to_json %>[instructorLogin]['privilege_databases'].includes('s'+index_number);
+    el.disabled = !create_db_el.checked || privilege_added;
+    el.disabled ?
+      el.classList.remove('db-privileges') :
+      el.classList.add('db-privileges');
+    el.checked = privilege_added;
+
+    el.addEventListener('click', (e) => {
+      document.getElementById('select-all-db-privileges').checked = allChecked('db-privileges');
+    });
+  };
+
+  manageDbPrivilageCheckboxes();
+
+  [...document.getElementsByClassName('check-instructor')]
+    .forEach( (el) => {
+      el.addEventListener('click', () => {
+        manageDbPrivilageCheckboxes();
+      });
+    });
+
+  document.getElementById('select-all-create-account')
+    .addEventListener('click', (e) => {
+      checkboxes = document.getElementsByClassName('create-account');
+      for(var i = 0; i < checkboxes.length; i++){
+        checkboxes[i].checked = e.target.checked;
+      }
+    });
+
+  document.getElementById('select-all-create-db')
+    .addEventListener('click', (e) => {
+      checkboxes = document.getElementsByClassName('create-db');
+      for(var i = 0; i < checkboxes.length; i++){
+        checkboxes[i].checked = e.target.checked;
+      }
+      manageDbPrivilageCheckboxes();
+    });
+
+  document.getElementById('select-all-db-privileges')
+    .addEventListener('click', (e) => {
+      checkboxes = document.getElementsByClassName('db-privileges');
+      for(var i = 0; i < checkboxes.length; i++){
+        checkboxes[i].checked = e.target.checked;
+      }
+    });
+
+  [...document.getElementsByClassName('create-account')]
+    .forEach( (el) => {
+      el.addEventListener('click', () => {
+        document.getElementById('select-all-create-account').checked = allChecked('create-account');
+      });
+    });
+
+  [...document.getElementsByClassName('create-db')]
+    .forEach( (el) => {
+      el.addEventListener('click', () => {
+        document.getElementById('select-all-create-db').checked = allChecked('create-db');
+        manageDbPrivilageCheckbox(el.value);
+      });
+    });
 </script>

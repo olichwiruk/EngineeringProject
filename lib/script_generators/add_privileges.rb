@@ -1,19 +1,18 @@
 module ScriptGenerators
-  class CreateDatabases
+  class AddPrivileges
     attr_reader :sql_runner
 
     def initialize(sql_runner)
       @sql_runner = sql_runner
     end
 
-    def call(students)
+    def call(employee, students)
       script = "\n"
 
       students.each do |student|
         sql_query = <<-SQL
 
-          GRANT ALL ON #{student.login}.* TO '#{student.login}'@'localhost' IDENTIFIED BY '#{student.password}';
-          CREATE DATABASE #{student.login} CHARACTER SET utf8 COLLATE utf8_polish_ci;
+          GRANT ALL ON #{student.login}.* TO '#{employee.login}'@'localhost' IDENTIFIED BY '#{employee.password}';
         SQL
 
         script += <<~SCRIPT

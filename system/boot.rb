@@ -64,7 +64,8 @@ Container.configure do |container|
       container[:student_repo],
       container[:add_employees_script_generator],
       container[:add_students_script_generator],
-      container[:create_databases_script_generator]
+      container[:create_databases_script_generator],
+      container[:add_privileges_script_generator]
     )
   end
 
@@ -82,6 +83,12 @@ Container.configure do |container|
 
   container.register(:create_databases_script_generator) do
     ScriptGenerators::CreateDatabases.new(
+      container[:sql_runner]
+    )
+  end
+
+  container.register(:add_privileges_script_generator) do
+    ScriptGenerators::AddPrivileges.new(
       container[:sql_runner]
     )
   end
