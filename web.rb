@@ -47,15 +47,49 @@ class Web < Application
       end
 
       r.post 'add_instructor' do
+        params = JSON.parse(r.body.read)
+        instructor_id = params.fetch('instructor_id').to_i
+        course_id = params.fetch('course_id').to_i
+
         r.resolve :add_instructor_to_course_service do |service|
-          params = JSON.parse(r.body.read)
-          instructor_id = params.fetch('instructor_id').to_i
-          course_id = params.fetch('course_id').to_i
-
           service.call(instructor_id, course_id)
-
-          r.redirect("courses/#{course_id}")
         end
+
+        r.redirect("courses/#{course_id}")
+      end
+    end
+
+    r.on 'employees' do
+      r.get 'new' do
+        course_id = r.params.fetch('course_id') do
+          r.redirect('/')
+        end
+
+        view(
+          'new_employee',
+          locals: {
+            course_id: course_id
+          }
+        )
+      end
+
+      r.post do
+        course_id = r.params.fetch('course_id')
+        title = r.params.fetch('title')
+        name = r.params.fetch('name')
+        surname = r.params.fetch('surname')
+
+        r.resolve :create_employee_service do |create_employee|
+          employee = create_employee.call(title, name, surname)
+
+          if employee
+            r.resolve :add_instructor_to_course_service do |add_instructor|
+              add_instructor.call(employee.id, course_id)
+            end
+          end
+        end
+
+        r.redirect("courses/#{course_id}")
       end
     end
 

@@ -81,6 +81,12 @@ Container.configure do |container|
     )
   end
 
+  container.register(:create_employee_service) do
+    Services::CreateEmployeeService.new(
+      container[:employee_repo]
+    )
+  end
+
   container.register(:add_employees_script_generator) do
     ScriptGenerators::AddEmployees.new
   end

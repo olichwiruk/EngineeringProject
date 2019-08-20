@@ -192,7 +192,7 @@
       const instructor = document.getElementById('add-instructor').value;
       console.log(instructor);
       if (instructor == 'new') {
-
+        location.replace('/employees/new?course_id=<%= course.id %>');
       } else {
         const params = {
           method: "POST",

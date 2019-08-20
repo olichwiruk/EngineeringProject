@@ -16,5 +16,11 @@ module Entities
     def full_name
       title + ' ' + name + ' ' + surname
     end
+
+    def valid?
+      return false if name.strip.empty? || surname.strip.empty?
+
+      true
+    end
   end
 end
