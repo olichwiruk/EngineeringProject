@@ -29,16 +29,32 @@ class Web < Application
     r.on 'courses' do
       r.get Integer do |course_id|
         r.resolve :course_service do |service|
-          course, students_data, employees_data = service.call(course_id)
+          course,
+            students_data,
+            instructors_data,
+            rest_employees = service.call(course_id)
 
           view(
             'course',
             locals: {
               course: course,
               students_system_data: students_data,
-              employees_system_data: employees_data
+              instructors_system_data: instructors_data,
+              rest_employees: rest_employees
             }
           )
+        end
+      end
+
+      r.post 'add_instructor' do
+        r.resolve :add_instructor_to_course_service do |service|
+          params = JSON.parse(r.body.read)
+          instructor_id = params.fetch('instructor_id').to_i
+          course_id = params.fetch('course_id').to_i
+
+          service.call(instructor_id, course_id)
+
+          r.redirect("courses/#{course_id}")
         end
       end
     end

@@ -27,6 +27,17 @@ module Repositories
         .one
     end
 
+    def without_instuctors_of(course)
+      employees
+        .exclude(
+          id: courses_employees
+                .where(course_id: course.id)
+                .pluck(:employee_id)
+          )
+        .map_to(::Entities::Employee)
+        .to_a
+    end
+
     def save(entity)
       return if find(entity)
       employees.changeset(:create, entity).commit

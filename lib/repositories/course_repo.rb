@@ -17,7 +17,12 @@ module Repositories
     end
 
     def save(entity)
-      create(entity) unless by_group(entity.group)
+      if by_group(entity.group)
+        update(entity)
+      else
+        create(entity)
+      end
+
       by_group(entity.group)
     end
 
@@ -35,6 +40,26 @@ module Repositories
           .changeset(:create, entity.instructors)
           .associate(course, :courses)
           .commit
+      end
+    end
+
+    private def update(entity)
+      courses.transaction do
+        courses_employees
+          .where(course_id: entity.id)
+          .changeset(:delete)
+          .commit
+
+        courses_employees
+          .changeset(
+            :create,
+            entity.instructors.map do |instructor|
+              {
+                course_id: entity.id,
+                employee_id: instructor.id
+              }
+            end
+          ).commit
       end
     end
 

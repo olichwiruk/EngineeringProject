@@ -54,6 +54,7 @@ Container.configure do |container|
   container.register(:course_service) do
     Services::CourseService.new(
       container[:course_repo],
+      container[:employee_repo],
       container[:system_repo]
     )
   end
@@ -71,6 +72,13 @@ Container.configure do |container|
 
   container.register(:execute_script_service) do
     Services::ExecuteScriptService.new
+  end
+
+  container.register(:add_instructor_to_course_service) do
+    Services::AddInstructorToCourseService.new(
+      container[:course_repo],
+      container[:employee_repo]
+    )
   end
 
   container.register(:add_employees_script_generator) do

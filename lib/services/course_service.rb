@@ -1,9 +1,10 @@
 module Services
   class CourseService
-    attr_reader :course_repo, :system_repo
+    attr_reader :course_repo, :employee_repo, :system_repo
 
-    def initialize(course_repo, system_repo)
+    def initialize(course_repo, employee_repo, system_repo)
       @course_repo = course_repo
+      @employee_repo = employee_repo
       @system_repo = system_repo
     end
 
@@ -12,7 +13,8 @@ module Services
       [
         course,
         students_data(course.students),
-        employees_data(course.instructors)
+        instructors_data(course.instructors),
+        rest_employees(course)
       ]
     end
 
@@ -32,7 +34,7 @@ module Services
       end
     end
 
-    private def employees_data(instructors)
+    private def instructors_data(instructors)
       instructors.each_with_object({}) do |instructor, memo|
         memo[instructor.login] =
           {
@@ -42,6 +44,10 @@ module Services
 
         memo
       end
+    end
+
+    private def rest_employees(course)
+      employee_repo.without_instuctors_of(course)
     end
 
     private def system_users

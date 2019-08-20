@@ -15,15 +15,24 @@
           <td><%= instructor.full_name %></td>
           <td>
             <input type='checkbox' name='create-instructors-account[]' value='<%= instructor.id %>'
-            <%= 'checked disabled' if employees_system_data[instructor.login][:account] %>
+            <%= 'checked disabled' if instructors_system_data[instructor.login][:account] %>
                    >
-                   <%= "(#{instructor.login})" if employees_system_data[instructor.login][:account] %>
+                   <%= "(#{instructor.login})" if instructors_system_data[instructor.login][:account] %>
           </td>
           <td><input type='radio' name='instructor-db' class='check-instructor' value='<%= instructor.id %>' data-instructor-name='<%= instructor.full_name %>' data-instructor-login='<%= instructor.login %>' <%= 'checked' if index == 0 %>></td>
         </tr>
       <% end %>
     </tbody>
   </table>
+  <select id='add-instructor' name='add-instructor'>
+    <option value='new'>Nowy pracownik</option>
+    <% rest_employees.each do |employee| %>
+      <option value='<%= employee.id %>'><%= employee.full_name %></option>
+    <% end %>
+  </select>
+  <button type='button' id='add-instructor-btn' class='btn btn-xs btn-success'>Dodaj</button>
+  <br>
+  <br>
   <br>
   <input type='hidden' name='course-code' value='<%= course.code %>'>
   <input class='btn btn-primary' type='submit' value='Generuj skrypt'>
@@ -86,8 +95,8 @@
 
 <script>
   var currentInstructor = document.querySelector('.check-instructor:checked');
-  var instructorName = currentInstructor.getAttribute('data-instructor-name');
-  var instructorLogin = currentInstructor.getAttribute('data-instructor-login');
+  var instructorName = currentInstructor ? currentInstructor.getAttribute('data-instructor-name') : '';
+  var instructorLogin = currentInstructor ? currentInstructor.getAttribute('data-instructor-login') : '';
 
   const allChecked = (type) => {
     checkboxes = document.getElementsByClassName(type);
@@ -98,13 +107,17 @@
 
   const manageDbPrivilageCheckboxes = () => {
     currentInstructor = document.querySelector('.check-instructor:checked');
-    instructorName = currentInstructor.getAttribute('data-instructor-name');
-    instructorLogin = currentInstructor.getAttribute('data-instructor-login');
+    instructorName = currentInstructor ? currentInstructor.getAttribute('data-instructor-name') : '';
+    instructorLogin = currentInstructor ? currentInstructor.getAttribute('data-instructor-login') : '';
 
     document.getElementById('db-instructor-name').textContent = instructorName;
     [...document.getElementsByClassName('privileges-checkbox')]
       .forEach( (el) => {
-        manageDbPrivilageCheckbox(el.value);
+        if (currentInstructor) {
+          manageDbPrivilageCheckbox(el.value);
+        } else {
+          el.disabled = true;
+        }
       });
     document.getElementById('select-all-db-privileges').checked = allChecked('db-privileges');
   };
@@ -113,7 +126,7 @@
     const create_db_el = document.getElementById(index_number + 'db');
     const el = document.getElementById(index_number + 'db_p');
 
-    privilege_added = <%= employees_system_data.to_json %>[instructorLogin]['privilege_databases'].includes('s'+index_number);
+    privilege_added = <%= instructors_system_data.to_json %>[instructorLogin]['privilege_databases'].includes('s'+index_number);
     el.disabled = !create_db_el.checked || privilege_added;
     el.disabled ?
       el.classList.remove('db-privileges') :
@@ -172,5 +185,29 @@
         document.getElementById('select-all-create-db').checked = allChecked('create-db');
         manageDbPrivilageCheckbox(el.value);
       });
+    });
+
+  document.getElementById('add-instructor-btn')
+    .addEventListener('click', () => {
+      const instructor = document.getElementById('add-instructor').value;
+      console.log(instructor);
+      if (instructor == 'new') {
+
+      } else {
+        const params = {
+          method: "POST",
+          body: JSON.stringify({
+            course_id: <%= course.id %>,
+            instructor_id: instructor
+          }),
+          headers: {
+            'Content-type': 'application/json'
+          },
+        }
+
+        fetch('add_instructor', params)
+          .then(() => { location.reload() })
+          .catch(error => { console.log(error) })
+      }
     });
 </script>
