@@ -8,20 +8,21 @@ module Services
       @student_repo = student_repo
     end
 
-    def call(params)
-      file_name = params.fetch('file-name')
+    def call(file_name)
       sheet = SheetManager.open(file_name)
 
       students = sheet.students.map do |student|
         ::Entities::Student.new(student)
       end
+      created_students = student_repo.save_many(students)
 
       instructor = ::Entities::Employee.new(sheet.instructor)
+      created_instructor = employee_repo.save(instructor)
 
       course = ::Entities::Course.new(
         sheet.course.to_hash.merge(
-          instructors: [instructor],
-          students: students
+          instructors: [created_instructor],
+          students: created_students
         )
       )
       course_repo.save(course)

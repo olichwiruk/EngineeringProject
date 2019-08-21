@@ -14,13 +14,10 @@ class Web < Application
     end
 
     r.on 'import' do
-      r.get do
-        view('import')
-      end
-
       r.post do
         r.resolve :import_service do |service|
-          course = service.call(r.params)
+          file_name = r.params.fetch('file-name')
+          course = service.call(file_name)
           r.redirect("courses/#{course.id}")
         end
       end

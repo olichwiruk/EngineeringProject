@@ -9,9 +9,13 @@ module Repositories
         .to_a
     end
 
-    def save(entity)
-      return if index_numbers.include? entity.index_number
-      students.changeset(:create, entity).commit
+    def save_many(entities)
+      entities_to_create = entities.dup.delete_if do |student|
+        index_numbers.include?(student.index_number)
+      end
+
+      students.changeset(:create, entities_to_create).commit
+      by_index_numbers(entities.map(&:index_number))
     end
 
     private def index_numbers

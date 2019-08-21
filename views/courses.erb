@@ -9,7 +9,7 @@
   </thead>
   <tbody>
     <% courses.each do |course| %>
-      <tr onclick="window.location='/courses/<%= course.id %>';">
+      <tr style='cursor: pointer;' onclick="window.location='/courses/<%= course.id %>';">
         <td>
           <%= course.name %>
         </td>

@@ -137,6 +137,8 @@ class SheetManager
   def students
     students = []
     sheet.rows[17..-1].each do |row|
+      next unless row[1] || row[2]
+
       surname, name = row[1].split(' ')
       index_number = row[2]
       students << Student.new(

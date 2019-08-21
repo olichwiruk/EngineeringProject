@@ -9,9 +9,12 @@ module Repositories
         .one
     end
 
-    def by_group(group)
+    def find(entity)
       graph
-        .where(group: group)
+        .where(
+          group: entity.group,
+          academic_year: entity.academic_year
+        )
         .map_to(::Entities::Course)
         .one
     end
@@ -23,13 +26,13 @@ module Repositories
     end
 
     def save(entity)
-      if by_group(entity.group)
+      if find(entity)
         update(entity)
       else
         create(entity)
       end
 
-      by_group(entity.group)
+      find(entity)
     end
 
     private def create(entity)
@@ -38,14 +41,27 @@ module Repositories
           courses.changeset(:create, entity).commit
         )
 
-        students
-          .changeset(:create, entity.students)
-          .associate(course, :courses)
-          .commit
-        employees
-          .changeset(:create, entity.instructors)
-          .associate(course, :courses)
-          .commit
+        courses_students
+          .changeset(
+            :create,
+            entity.students.map do |student|
+              {
+                course_id: course.id,
+                student_id: student.id
+              }
+            end
+          ).commit
+
+        courses_employees
+          .changeset(
+            :create,
+            entity.instructors.map do |instructor|
+              {
+                course_id: course.id,
+                employee_id: instructor.id
+              }
+            end
+          ).commit
       end
     end
 
