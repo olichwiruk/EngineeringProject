@@ -25,6 +25,10 @@ module Entities
       name.split(' ').map(&:chr).join
     end
 
+    def academy_unit_short
+      academy_unit.split(' ').map(&:chr).join
+    end
+
     def code
       name_short.downcase + academic_year[-2..-1]
     end
