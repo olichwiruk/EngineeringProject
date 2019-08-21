@@ -39,6 +39,7 @@ module Entities
 
     def add_instructor(employee)
       instructors << employee
+      instructors.uniq!
     end
   end
 end

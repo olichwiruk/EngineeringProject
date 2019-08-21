@@ -41,8 +41,10 @@ module Repositories
     def save(entity)
       return unless entity.valid?
       return find(entity) if find(entity)
-      employees.changeset(:create, entity).commit
-      find(entity)
+
+      ::Entities::Employee.new(
+        employees.changeset(:create, entity).commit
+      )
     end
   end
 end
