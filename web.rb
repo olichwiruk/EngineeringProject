@@ -10,7 +10,7 @@ class Web < Application
 
   route do |r|
     r.root do
-      r.redirect('import')
+      r.redirect('courses')
     end
 
     r.on 'import' do
@@ -56,6 +56,19 @@ class Web < Application
         end
 
         r.redirect("courses/#{course_id}")
+      end
+
+      r.get do
+        r.resolve :courses_service do |service|
+          courses = service.call
+
+          view(
+            'courses',
+            locals: {
+              courses: courses
+            }
+          )
+        end
       end
     end
 

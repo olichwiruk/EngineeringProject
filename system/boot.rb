@@ -51,6 +51,12 @@ Container.configure do |container|
     )
   end
 
+  container.register(:courses_service) do
+    Services::CoursesService.new(
+      container[:course_repo]
+    )
+  end
+
   container.register(:course_service) do
     Services::CourseService.new(
       container[:course_repo],

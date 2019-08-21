@@ -16,6 +16,12 @@ module Repositories
         .one
     end
 
+    def all
+      courses
+        .map_to(::Entities::Course)
+        .to_a
+    end
+
     def save(entity)
       if by_group(entity.group)
         update(entity)

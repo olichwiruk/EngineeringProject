@@ -29,6 +29,10 @@ module Entities
       name_short.downcase + academic_year[-2..-1]
     end
 
+    def group_number
+      group[-2..-1].to_i
+    end
+
     def add_instructor(employee)
       instructors << employee
     end
