@@ -1,7 +1,20 @@
 <form action='execute' method='post'>
-  <input type='submit' class='btn btn-success' value='Wykonaj'></input>
+  <div class="row">
+    <div class="col-md-4"></div>
+    <input type='submit' class='btn btn-success col-md-4' value='Wykonaj'></input>
+
+    <div class="col-md-4"></div>
+  </div>
   <br>
-  <textarea name='script' rows='20' cols='80'><%= script %></textarea>
+  <div class="row">
+    <div class="col-md-3"></div>
+    <textarea class="col-md-6" name='script' rows='20' ><%= script %></textarea>
+    <div class="col-md-3"></div>
+  </div>
   <br>
-  <input type='submit' class='btn btn-success' value='Wykonaj'></input>
+  <div class="row">
+    <div class="col-md-4"></div>
+    <input type='submit' class='btn btn-success col-md-4' value='Wykonaj'></input>
+    <div class="col-md-4"></div>
+  </div>
 </form>
