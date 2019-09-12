@@ -7,11 +7,11 @@ module System
     end
 
     def query(statement)
-      "mysql -u #{config['username']} -p#{config['password']} -e \"#{statement}\";"
+      "mysql -u #{config['username']} -p#{config['password']} -e \\\"#{statement}\\\";"
     end
 
     def run(statement)
-      %x[#{query(statement)}]
+      %x[echo "#{query(statement)}" | sudo su]
     end
   end
 end

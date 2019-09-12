@@ -65,14 +65,24 @@ Container.configure do |container|
     )
   end
 
-  container.register(:generate_script_service) do
-    Services::GenerateScriptService.new(
+  container.register(:generate_create_script_service) do
+    Services::GenerateCreateScriptService.new(
       container[:employee_repo],
       container[:student_repo],
       container[:add_employees_script_generator],
       container[:add_students_script_generator],
       container[:create_databases_script_generator],
       container[:add_privileges_script_generator]
+    )
+  end
+
+  container.register(:generate_delete_script_service) do
+    Services::GenerateDeleteScriptService.new(
+      container[:employee_repo],
+      container[:student_repo],
+      container[:remove_employees_script_generator],
+      container[:remove_students_script_generator],
+      container[:delete_databases_script_generator]
     )
   end
 
@@ -109,6 +119,20 @@ Container.configure do |container|
 
   container.register(:add_privileges_script_generator) do
     ScriptGenerators::AddPrivileges.new(
+      container[:sql_runner]
+    )
+  end
+
+  container.register(:remove_employees_script_generator) do
+    ScriptGenerators::RemoveEmployees.new
+  end
+
+  container.register(:remove_students_script_generator) do
+    ScriptGenerators::RemoveStudents.new
+  end
+
+  container.register(:delete_databases_script_generator) do
+    ScriptGenerators::DeleteDatabases.new(
       container[:sql_runner]
     )
   end

@@ -18,7 +18,7 @@ module System
       sql = <<~SQL
         SELECT table_schema
         FROM information_schema.schema_privileges
-        WHERE grantee=\\\"'#{employee.login}'@'localhost'\\\"
+        WHERE grantee=\\\\\\\"'#{employee.login}'@'localhost'\\\\\\\"
         GROUP BY table_schema;
       SQL
       sql_runner.run(sql).split(' ').drop(1)

@@ -108,8 +108,11 @@ class Web < Application
 
       r.on 'script' do
         r.post do
-          r.resolve :generate_script_service do |service|
-            script = service.call(
+          create_script = ''
+          delete_script = ''
+
+          r.resolve :generate_create_script_service do |service|
+            create_script = service.call(
               course_code: r.params['course-code'],
               employee_ids_to_create_account: r.params['create-instructors-account'],
               index_numbers_to_create_account: r.params['create-students-account'],
@@ -117,8 +120,20 @@ class Web < Application
               employee_id_to_add_privileges: r.params['instructor-db'],
               index_numbers_to_add_privileges: r.params['add-privileges-db']
             )
-            view('script', locals: { script: script })
           end
+
+          r.resolve :generate_delete_script_service do |service|
+            delete_script = service.call(
+              employee_ids_to_delete_account: r.params['delete-instructors-account'],
+              index_numbers_to_delete_account: r.params['delete-students-account'],
+              index_numbers_to_delete_database: r.params['delete-students-db']
+            )
+          end
+
+          view('script', locals: {
+            create_script: create_script,
+            delete_script: delete_script
+          })
         end
       end
 

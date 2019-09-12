@@ -37,9 +37,13 @@
   <table class='table table-striped table-hover'>
     <thead>
       <tr>
-        <th>Prowadzący</th>
-        <th>Utwórz konto w systemie</th>
-        <th>Zarządzanie bazami danych</th>
+        <th rowspan="2">Prowadzący</th>
+        <td style="text-align: center;" colspan="2">Konto systemowe</td>
+        <th rowspan="2">Zarządzanie bazami danych</th>
+      </tr>
+      <tr>
+        <th>Utwórz</th>
+        <th>Usuń</th>
       </tr>
     </thead>
     <tbody>
@@ -50,7 +54,11 @@
             <input type='checkbox' name='create-instructors-account[]' value='<%= instructor.id %>'
             <%= 'checked disabled' if instructors_system_data[instructor.login][:account] %>
                    >
-                   <%= "(#{instructor.login})" if instructors_system_data[instructor.login][:account] %>
+          </td>
+          <td>
+            <input type='checkbox' name='delete-instructors-account[]' value='<%= instructor.id %>'
+            <%= 'disabled' unless instructors_system_data[instructor.login][:account] %>
+                   >
           </td>
           <td><input type='radio' name='instructor-db' class='check-instructor' value='<%= instructor.id %>' data-instructor-name='<%= instructor.full_name %>' data-instructor-login='<%= instructor.login %>' <%= 'checked' if index == 0 %>></td>
         </tr>
@@ -67,32 +75,46 @@
   <br>
   <br>
   <input type='hidden' name='course-code' value='<%= course.code %>'>
-  <div class="col-md-4"></div>
-  <div class="col-md-4">
-    <input class='btn btn-primary btn-block' type='submit' value='Generuj skrypt'>
+  <div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+      <input class='btn btn-primary btn-block' type='submit' value='Generuj skrypt'>
+    </div>
+    <div class="col-md-4"></div>
   </div>
-  <div class="col-md-4"></div>
+  <br>
+  <br>
   <table class='table table-striped table-hover'>
     <thead>
       <tr>
-        <th width='10%'>nr albumu</td>
-        <th></th>
+        <th width='10%' rowspan="2">nr albumu</td>
+        <th rowspan="2"></th>
+        <td style="text-align: center;" colspan="2">Konto systemowe</td>
+        <td style="text-align: center;" colspan="2">Baza danych</td>
+        <th rowspan="2">
+          <div>Nadaj prawa prowadzącemu</div>
+          <div id='db-instructor-name'></div>
+          <input type='checkbox' id='select-all-db-privileges'>
+        </th>
+      </tr>
+      <tr>
         <th>
-          <div>Utwórz konto w systemie</div>
+          <div>Utwórz</div>
           <div>
             <input type='checkbox' id='select-all-create-account'>
           </div>
         </th>
+        <th style="vertical-align: top;">
+          <div>Usuń</div>
+        </th>
         <th>
-          <div>Utwórz bazę danych</div>
+          <div>Utwórz</div>
           <div>
             <input type='checkbox' id='select-all-create-db'>
           </div>
         </th>
-        <th>
-          <div>Nadaj prawa prowadzącemu</div>
-          <div id='db-instructor-name'></div>
-          <input type='checkbox' id='select-all-db-privileges'>
+        <th style="vertical-align: top;">
+          <div>Usuń</div>
         </th>
       </tr>
     </thead>
@@ -108,10 +130,20 @@
             <%= user_exists ? 'checked disabled' : 'class = "create-account"' %>
                      >
           </td>
+          <td><input type='checkbox' name='delete-students-account[]' value='<%= student.index_number.to_s %>'
+            <%= user_exists ? 'class = "delete-account"' : 'disabled' %>
+                     >
+          </td>
           <td><input type='checkbox' name='create-students-db[]'
                      id='<%= student.index_number.to_s %>db'
                      value='<%= student.index_number.to_s %>'
                      <%= db_exists ? 'disabled checked' : 'class = "create-db"' %>
+                     >
+          </td>
+          <td><input type='checkbox' name='delete-students-db[]'
+                     id='<%= student.index_number.to_s %>db'
+                     value='<%= student.index_number.to_s %>'
+                     <%= db_exists ? 'class = "delete-db"' : 'disabled' %>
                      >
           </td>
           <td>

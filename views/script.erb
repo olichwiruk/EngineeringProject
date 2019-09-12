@@ -1,26 +1,53 @@
 <form action='execute' method='post'>
   <div class="row">
     <div class="col-md-4"></div>
-    <input type='submit' class='btn btn-success col-md-3' value='Wykonaj'></input>
+    <input type='submit' class='btn btn-success col-md-3' value='Wykonaj skrypt dodawania'></input>
 
     <div class="col-md-1"></div>
-    <a href="#" class='btn btn-danger col-md-1' id="save">Zapisz</a>
+    <a href="#" class='btn btn-danger col-md-1' id="create_save">Zapisz</a>
     <div class="col-md-4"></div>
   </div>
   <br>
   <div class="row">
     <div class="col-md-3"></div>
-    <textarea class="col-md-6" name='script' rows='20' id="script"><%= script %></textarea>
+    <textarea class="col-md-6" name='script' rows='20' id="create_script"><%= create_script %></textarea>
+    <div class="col-md-3"></div>
+  </div>
+</form>
+
+<br>
+<hr></hr>
+<br>
+
+<form action='execute' method='post'>
+  <div class="row">
+    <div class="col-md-4"></div>
+    <input type='submit' class='btn btn-success col-md-3' value='Wykonaj skrypt usuwania'></input>
+
+    <div class="col-md-1"></div>
+    <a href="#" class='btn btn-danger col-md-1' id="delete_save">Zapisz</a>
+    <div class="col-md-4"></div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-3"></div>
+    <textarea class="col-md-6" name='script' rows='20' id="delete_script"><%= delete_script %></textarea>
     <div class="col-md-3"></div>
   </div>
 </form>
 
 <script>
-  const saveBtn = document.querySelector("#save");
-  const scriptText = document.querySelector("#script").value;
   const type = "text/plain";
-  const file = new Blob([scriptText], {type: type});
 
-  saveBtn.href = URL.createObjectURL(file);
-  saveBtn.download = "";
+  const createSaveBtn = document.querySelector("#create_save");
+  const createScriptText = document.querySelector("#create_script").value;
+  const createFile = new Blob([createScriptText], {type: type});
+  createSaveBtn.href = URL.createObjectURL(createFile);
+  createSaveBtn.download = "";
+
+  const deleteSaveBtn = document.querySelector("#delete_save");
+  const deleteScriptText = document.querySelector("#delete_script").value;
+  const deleteFile = new Blob([deleteScriptText], {type: type});
+  deleteSaveBtn.href = URL.createObjectURL(createFile);
+  deleteSaveBtn.download = "";
 </script>
